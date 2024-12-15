@@ -10,7 +10,7 @@ const int ledPin = 9;
 
 </body>
 </html>
-void loop() { int hitValue = analogRead(hitPin);
+void loop() { int hitValue = analogRead(hitPin);                                                                               
 int brightness = hitValue * 255 / 1023;
 analogWrite(ledPin, brightness);
 delay(10); }
@@ -24,3 +24,7 @@ int brightness = map(hitValue, 0, 1023, 0, 255);
 analogWrite(ledPin, brightness);
 delay(10); }
 </p>
+
+<h2> The Helping School Project</h2>
+
+<p></p>
