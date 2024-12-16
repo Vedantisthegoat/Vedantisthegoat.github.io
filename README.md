@@ -151,12 +151,12 @@ void loop() {
 
     <section class="section">
       <h2>License</h2>
-      <p>This project is licensed under the <strong>MIT License</strong>. Feel free to modify and use the code as you wish!</p>
+      <p>Vedant Is the goat by the way</p>
     </section>
   </main>
 
   <footer>
-    <p>Created by [Your Name]. &copy; 2024</p>
+    <p>Created by Vedant. &copy; 2024</p>
   </footer>
 </body>
 </html>
