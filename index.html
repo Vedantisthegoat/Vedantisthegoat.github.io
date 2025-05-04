@@ -67,7 +67,7 @@
       </li>
     </ul>
 
-    <h2>🖥️ Requirements</h2>
+    <h2>💻 Requirements</h2>
     <pre><code>pip install opencv-python pillow ultralytics</code></pre>
 
     <h2>🚀 How to Run</h2>
@@ -89,7 +89,7 @@ ecolens-ai/
 └── yolov8n.pt           # (auto-downloaded by Ultralytics if not present)
     </code></pre>
 
-    <h2>🤖 Model</h2>
+    <h2>🧐 Model</h2>
     <p>
       This app uses <a href="https://github.com/ultralytics/ultralytics" target="_blank">Ultralytics YOLOv8</a> (<code>yolov8n.pt</code>)
       to detect common objects. The model is automatically downloaded the first time it runs.
