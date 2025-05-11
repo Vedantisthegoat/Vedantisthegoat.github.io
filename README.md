@@ -1,16 +1,11 @@
-# Trash Detection Models
+# All Trash Detection Models - Code and Explanation
 
 ---
 
 ## Model 1: Basic Real-Time Trash Detection with Dynamic Captions
 
 ### Description:
-This model uses the YOLOv8n object detection model to detect common trash items (like bottles, cups, paper, and chip bags) and displays dynamic captions based on what it detects. It also includes a basic GUI using Tkinter.
-
-### Features:
-- Detects trash objects in real-time video feed.
-- Displays a caption based on the object detected.
-- GUI buttons for setup and AI cleaning.
+This model uses YOLOv8 to detect predefined trash objects (bottle, cup, paper, chips) from the webcam feed. It displays a caption based on what it detects and outlines trash items only. It also holds the caption for 3 seconds before changing.
 
 ### Python Code:
 ```python
@@ -43,6 +38,7 @@ video_source = 0
 last_caption_time = 0
 current_caption = "No litter detected. Good job!"
 
+
 def detect_objects_yolo(frame):
     results = model.predict(frame, imgsz=640, verbose=False)[0]
     labels = model.model.names
@@ -59,6 +55,7 @@ def detect_objects_yolo(frame):
                 boxes.append((label, xyxy))
 
     return detected, boxes
+
 
 def start_setup():
     steps = [
@@ -78,6 +75,7 @@ def start_setup():
         root.update()
         time.sleep(0.5)
     messagebox.showinfo("Setup", "Setup complete!")
+
 
 def show_camera_feed():
     global cap, is_camera_running, last_caption_time, current_caption
@@ -129,15 +127,19 @@ def show_camera_feed():
     cap.release()
     cv2.destroyAllWindows()
 
+
 def stop_camera_feed():
     global is_camera_running
     is_camera_running = False
 
+
 def clean_environment():
     messagebox.showinfo("AI", "AI is cleaning the environment...")
 
+
 def on_start_camera_feed():
     threading.Thread(target=show_camera_feed, daemon=True).start()
+
 
 def on_close():
     global is_camera_running
@@ -146,6 +148,7 @@ def on_close():
         cap.release()
     cv2.destroyAllWindows()
     root.destroy()
+
 
 # --- GUI Setup ---
 root = tk.Tk()
@@ -191,13 +194,6 @@ exit_button.pack(pady=10)
 root.mainloop()
 ```
 
-### How It Works:
-- Loads YOLOv8n and detects trash objects.
-- Captures webcam feed, performs detection.
-- Updates GUI with bounding boxes and dynamic captions.
-
 ---
 
-## More models coming soon...
-
-Would you like to continue with Model 2 now?
+Model 2, Model 3, and more will be added below here...
