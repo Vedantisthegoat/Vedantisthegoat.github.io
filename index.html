@@ -1,119 +1,199 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>EcoLens AI</title>
-  <style>
-    body {
-      font-family: 'Comic Sans MS', cursive, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: linear-gradient(to right, white 50%, #b3e0ff 50%);
-      color: #333;
-    }
-    .container {
-      width: 80%;
-      margin: auto;
-      padding: 40px;
-    }
-    h1 {
-      font-size: 3em;
-      color: #2a7dab;
-    }
-    h2 {
-      color: #2a7dab;
-      margin-top: 40px;
-    }
-    code, pre {
-      background-color: #f4f4f4;
-      padding: 5px 10px;
-      border-radius: 4px;
-      display: block;
-      margin: 10px 0;
-    }
-    ul {
-      padding-left: 20px;
-    }
-    .screenshot {
-      width: 100%;
-      max-width: 600px;
-      border: 2px solid #2a7dab;
-      border-radius: 8px;
-      margin-top: 20px;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>🌿 EcoLens AI — Real-Time Trash Detection Assistant</h1>
-    <p>
-      EcoLens AI is a fun, camera-powered desktop app built with Python and YOLOv8 that encourages environmental cleanup.
-      It detects objects like bottles, paper, and chip bags using a live webcam and generates friendly captions like:
-    </p>
-    <blockquote><strong>“Let’s help the environment by throwing the trash away!”</strong></blockquote>
+# All Trash Detection Models - Code and Explanation
 
-    <h2>🧠 Features</h2>
-    <ul>
-      <li>🔍 Real-time object detection using YOLOv8</li>
-      <li>🎨 Playful GUI with a white/blue background</li>
-      <li>📸 Live camera feed with auto-updating captions</li>
-      <li>🗑️ Recognizes trash-related objects like:
-        <ul>
-          <li>plastic bottles</li>
-          <li>cups</li>
-          <li>paper</li>
-          <li>chip bags</li>
-        </ul>
-      </li>
-    </ul>
+---
 
-    <h2>💻 Requirements</h2>
-    <pre><code>pip install opencv-python pillow ultralytics</code></pre>
+## Model 1: Basic Real-Time Trash Detection with Dynamic Captions
 
-    <h2>🚀 How to Run</h2>
-    <ol>
-      <li>Clone this repo or download the code.</li>
-      <li>Run the script:</li>
-    </ol>
-    <pre><code>python ecolens_gui.py</code></pre>
-    <ol start="3">
-      <li>Click <strong>Start Setup</strong> → <strong>Start Camera Feed</strong> to begin.</li>
-      <li>Watch real-time captions update as the AI detects objects!</li>
-    </ol>
+### Description:
+This model uses YOLOv8 to detect predefined trash objects (bottle, cup, paper, chips) from the webcam feed. It displays a caption based on what it detects and outlines trash items only. It also holds the caption for 3 seconds before changing.
 
-    <h2>📦 File Structure</h2>
-    <pre><code>
-ecolens-ai/
-├── ecolens_gui.py       # Main application file
-├── README.md            # This file
-└── yolov8n.pt           # (auto-downloaded by Ultralytics if not present)
-    </code></pre>
+### Python Code:
+```python
+import tkinter as tk
+from tkinter import messagebox
+import cv2
+import threading
+import time
+from PIL import Image, ImageTk
+from ultralytics import YOLO
 
-    <h2>🧐 Model</h2>
-    <p>
-      This app uses <a href="https://github.com/ultralytics/ultralytics" target="_blank">Ultralytics YOLOv8</a> (<code>yolov8n.pt</code>)
-      to detect common objects. The model is automatically downloaded the first time it runs.
-    </p>
+# Load YOLOv8 model
+model = YOLO("yolov8n.pt")
 
-    <h2>👩‍💻 Developer Notes</h2>
-    <p>
-      If you encounter OpenCV GUI issues on Windows, make sure you're not running the script from PowerShell.
-      Use <strong>Command Prompt</strong> or run it directly from <strong>VS Code</strong>.
-    </p>
+# Trash labels you want to track and outline
+TRASH_LABELS = {"bottle", "cup", "paper", "chips"}
 
-    <h2>❤️ Credits</h2>
-    <p>Built using:</p>
-    <ul>
-      <li><a href="https://github.com/ultralytics/ultralytics" target="_blank">Ultralytics YOLOv8</a></li>
-      <li>OpenCV</li>
-      <li>Tkinter GUI</li>
-      <li>Pillow</li>
-    </ul>
+# Captions to display for each object
+CAPTIONS = {
+    "bottle": "Let's recycle that bottle to help the environment!",
+    "cup": "That cup looks like it belongs in the recycling bin.",
+    "paper": "Let's throw away that crumpled up paper.",
+    "chips": "You see that chip bag? Let's recycle it!"
+}
 
-    <h2>📷 Example</h2>
-    <img class="screenshot" src="assets/example_frame.jpg" alt="EcoLens Screenshot">
+# Global variables
+cap = None
+is_camera_running = False
+video_source = 0
+last_caption_time = 0
+current_caption = "No litter detected. Good job!"
 
-    <h2>🌍 Let’s help the environment, one detection at a time!</h2>
-  </div>
-</body>
-</html>
+
+def detect_objects_yolo(frame):
+    results = model.predict(frame, imgsz=640, verbose=False)[0]
+    labels = model.model.names
+    detected = []
+    boxes = []
+
+    if results.boxes is not None:
+        for box in results.boxes:
+            cls_id = int(box.cls[0])
+            label = labels.get(cls_id, "unknown")
+            if label in TRASH_LABELS:
+                detected.append(label)
+                xyxy = box.xyxy[0].tolist()
+                boxes.append((label, xyxy))
+
+    return detected, boxes
+
+
+def start_setup():
+    steps = [
+        "Step 1: Initializing system...",
+        "Step 2: Checking camera...",
+        "Step 3: Verifying hardware...",
+        "Step 4: Configuring environment...",
+        "Step 5: Loading AI models...",
+        "Step 6: Setting up video feed...",
+        "Step 7: Connecting sensors...",
+        "Step 8: Calibration...",
+        "Step 9: System ready...",
+        "Step 10: Setup complete!"
+    ]
+    for step in steps:
+        progress_label.config(text=step)
+        root.update()
+        time.sleep(0.5)
+    messagebox.showinfo("Setup", "Setup complete!")
+
+
+def show_camera_feed():
+    global cap, is_camera_running, last_caption_time, current_caption
+    cap = cv2.VideoCapture(video_source)
+
+    if not cap.isOpened():
+        messagebox.showerror("Error", "Could not open camera.")
+        return
+
+    is_camera_running = True
+
+    while is_camera_running:
+        ret, frame = cap.read()
+        if not ret:
+            break
+
+        detected_objects, trash_boxes = detect_objects_yolo(frame)
+
+        now = time.time()
+        if detected_objects and (now - last_caption_time) > 3:
+            for obj in detected_objects:
+                if obj in CAPTIONS:
+                    current_caption = CAPTIONS[obj]
+                    last_caption_time = now
+                    break
+        elif (now - last_caption_time) > 3:
+            current_caption = "No litter detected. Good job!"
+
+        # Draw only trash bounding boxes
+        for label, box in trash_boxes:
+            x1, y1, x2, y2 = map(int, box)
+            cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+            cv2.putText(frame, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX,
+                        0.6, (0, 255, 0), 2)
+
+        # Draw caption
+        cv2.putText(frame, current_caption, (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
+                    0.7, (255, 255, 255), 2)
+
+        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        img = Image.fromarray(frame_rgb)
+        imgtk = ImageTk.PhotoImage(image=img)
+
+        video_label.imgtk = imgtk
+        video_label.configure(image=imgtk)
+        video_label.update_idletasks()
+        time.sleep(0.03)
+
+    cap.release()
+    cv2.destroyAllWindows()
+
+
+def stop_camera_feed():
+    global is_camera_running
+    is_camera_running = False
+
+
+def clean_environment():
+    messagebox.showinfo("AI", "AI is cleaning the environment...")
+
+
+def on_start_camera_feed():
+    threading.Thread(target=show_camera_feed, daemon=True).start()
+
+
+def on_close():
+    global is_camera_running
+    is_camera_running = False
+    if cap is not None:
+        cap.release()
+    cv2.destroyAllWindows()
+    root.destroy()
+
+
+# --- GUI Setup ---
+root = tk.Tk()
+root.title("AI Cleanup Assistant")
+root.geometry("800x600")
+root.configure(bg="lightblue")
+root.protocol("WM_DELETE_WINDOW", on_close)
+
+# Setup frame
+setup_frame = tk.Frame(root, bg="white")
+setup_frame.pack(pady=10)
+
+progress_label = tk.Label(setup_frame, text="Ready to start setup", font=("Comic Sans MS", 14), bg="white")
+progress_label.pack()
+
+setup_button = tk.Button(setup_frame, text="Start Setup", command=start_setup)
+setup_button.pack(pady=10)
+
+# Camera frame
+camera_frame = tk.Frame(root, bg="lightblue")
+camera_frame.pack(pady=10)
+
+video_label = tk.Label(camera_frame)
+video_label.pack()
+
+camera_button = tk.Button(camera_frame, text="Start Camera Feed", command=on_start_camera_feed)
+camera_button.pack(pady=5)
+
+stop_button = tk.Button(camera_frame, text="Stop Camera Feed", command=stop_camera_feed)
+stop_button.pack(pady=5)
+
+# AI frame
+ai_frame = tk.Frame(root, bg="white")
+ai_frame.pack(pady=10)
+
+clean_button = tk.Button(ai_frame, text="Start AI Environment Cleaning", command=clean_environment)
+clean_button.pack(pady=10)
+
+exit_button = tk.Button(root, text="Exit", command=on_close)
+exit_button.pack(pady=10)
+
+# Start the GUI
+root.mainloop()
+```
+
+---
+
+Model 2, Model 3, and more will be added below here...
