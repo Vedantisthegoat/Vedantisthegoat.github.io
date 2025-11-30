@@ -1,134 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Vedant's Page</title>
-<style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vedant's About Me</title>
+  <style>
     body {
-        font-family: Arial, sans-serif;
-        background: linear-gradient(#a8e6ff, #ffffff);
-        overflow-x: hidden;
-        height: 100vh;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to bottom, #a0eaff, #ffffff);
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
     }
 
-    h1 {
-        text-align: center;
-        font-size: 2.5rem;
+    h1, p {
+      text-align: center;
     }
 
-    .bio {
-        text-align: center;
-        font-size: 1.4rem;
-    }
-
-    /* Duck walking */
+    /* Walking ducks */
     .duck {
-        position: absolute;
-        width: 80px;
-        bottom: 0;
-        animation: walk 10s linear infinite;
+      position: absolute;
+      bottom: 0;
+      width: 50px;
+      transition: transform 0.1s linear;
     }
 
-    @keyframes walk {
-        from { left: -100px; }
-        to { left: 110%; }
+    /* Flying ducks */
+    .flying-duck {
+      position: absolute;
+      width: 50px;
+      transition: transform 0.1s linear;
     }
 
-    /* Flying duck */
-    .flying {
-        position: absolute;
-        width: 80px;
-        animation: fly 6s linear forwards;
-    }
-
-    @keyframes fly {
-        from { transform: translate(-200px, 200px) rotate(10deg); }
-        to { transform: translate(120vw, -200px) rotate(-20deg); }
-    }
-
-    /* Monkey climbing */
+    /* Monkeys climbing */
     .monkey {
-        position: absolute;
-        width: 100px;
-        left: 0;
-        animation: climb 6s linear forwards;
+      position: absolute;
+      width: 60px;
+      transition: transform 0.1s linear;
     }
-
-    @keyframes climb {
-        from { bottom: -150px; transform: translateX(-50px); }
-        to { bottom: 100vh; transform: translateX(40px); }
-    }
-</style>
+  </style>
 </head>
 <body>
+  <h1>Hi, I'm Vedant</h1>
+  <p>I like soccer, video games, and running.</p>
+  <p>I play for Cupertino FC, love Barcelona, support Man City, hate Man United.</p>
+  <p>I love Minecraft and Fortnite!</p>
+  <p>Press SPACE for monkeys, R for flying ducks, M for more flying ducks, 4 for games!</p>
 
-<h1>Welcome to Vedant's GitHub Page!</h1>
-
-<div class="bio">
-    <p>My name is <strong>Vedant</strong></p>
-    <p>I like soccer, video games, and running</p>
-    <p>I play for <strong>Cupertino FC</strong></p>
-    <p>I love and support <strong>Barcelona</strong></p>
-    <p>I support <strong>Man City</strong> and hate <strong>Man United</strong></p>
-    <p>I love Minecraft & Fortnite</p>
-    <p><strong>Press 4 to go to my Games!</strong></p>
-</div>
-
-<!-- Moving Ducks -->
-<img src="https://i.imgur.com/4NJl8yX.png" class="duck" style="animation-delay:0s;">
-<img src="https://i.imgur.com/4NJl8yX.png" class="duck" style="animation-delay:3s;">
-<img src="https://i.imgur.com/4NJl8yX.png" class="duck" style="animation-delay:6s;">
-
-<script>
-// -------------------------------
-// KEYBOARD CONTROLS
-// -------------------------------
-
-document.addEventListener("keydown", function(e) {
-
-    // Press R = Flying ducks
-    if (e.key === "r" || e.key === "R") {
-        spawnFlyingDuck();
+  <script>
+    // Utility function to create animal images
+    function createAnimal(src, className, x = 0, y = 0) {
+      const img = document.createElement('img');
+      img.src = src;
+      img.className = className;
+      img.style.left = x + 'px';
+      img.style.top = y + 'px';
+      document.body.appendChild(img);
+      return img;
     }
 
-    // Press SPACE = Monkeys climbing
-    if (e.key === " ") {
-        spawnMonkey();
+    // Walking ducks
+    const walkingDucks = [];
+    for (let i = 0; i < 5; i++) {
+      walkingDucks.push(createAnimal(
+        'https://i.imgur.com/1yFzA8Q.png', // small duck image
+        'duck',
+        i * 100,
+        window.innerHeight - 80
+      ));
     }
 
-    // Press 4 = Go to games.html page
-    if (e.key === "4") {
-        window.location.href = "games.html";
-    }
-});
+    // Animate walking ducks
+    setInterval(() => {
+      walkingDucks.forEach(duck => {
+        let left = parseInt(duck.style.left);
+        left += 2;
+        if (left > window.innerWidth) left = -50;
+        duck.style.left = left + 'px';
+      });
+    }, 50);
 
-// -------------------------------
-// SPAWN FLYING DUCK
-// -------------------------------
-function spawnFlyingDuck() {
-    let duck = document.createElement("img");
-    duck.src = "https://i.imgur.com/4NJl8yX.png";
-    duck.className = "flying";
-    duck.style.top = Math.random() * 300 + "px";
-    duck.style.left = "-150px";
-    document.body.appendChild(duck);
+    // Keypress actions
+    document.addEventListener('keydown', function(event) {
+      if (event.key === ' ') { // monkeys climbing
+        const monkey = createAnimal(
+          'https://i.imgur.com/FrUZfTh.png', // monkey image
+          'monkey',
+          Math.random() * (window.innerWidth - 60),
+          window.innerHeight - 80
+        );
+        let top = parseInt(monkey.style.top);
+        const climb = setInterval(() => {
+          top -= 5;
+          monkey.style.top = top + 'px';
+          if (top < -60) {
+            clearInterval(climb);
+            monkey.remove();
+          }
+        }, 50);
+      }
 
-    setTimeout(() => duck.remove(), 6000);
-}
+      if (event.key.toLowerCase() === 'r' || event.key.toLowerCase() === 'm') { // flying ducks
+        const fduck = createAnimal(
+          'https://i.imgur.com/1yFzA8Q.png', 
+          'flying-duck',
+          Math.random() * (window.innerWidth - 50),
+          window.innerHeight - 80
+        );
+        let top = parseInt(fduck.style.top);
+        const fly = setInterval(() => {
+          top -= 8;
+          fduck.style.top = top + 'px';
+          if (top < -50) {
+            clearInterval(fly);
+            fduck.remove();
+          }
+        }, 50);
+      }
 
-// -------------------------------
-// SPAWN MONKEY
-// -------------------------------
-function spawnMonkey() {
-    let monkey = document.createElement("img");
-    monkey.src = "https://i.imgur.com/ZY6Ew0P.png";
-    monkey.className = "monkey";
-    monkey.style.left = Math.random() * (window.innerWidth - 150) + "px";
-    document.body.appendChild(monkey);
-
-    setTimeout(() => monkey.remove(), 6000);
-}
-</script>
-
+      if (event.key === '4') { // go to DuckMath games
+        window.location.href = 'https://duckmath.org/';
+      }
+    });
+  </script>
 </body>
 </html>
