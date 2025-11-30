@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Duck Math</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #cfe8fc;
+            overflow: hidden;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #pointsDisplay {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 12px;
+            border: 2px solid black;
+            font-size: 22px;
+            font-weight: bold;
+            z-index: 10;
+        }
+
+        #questionBox {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #fff7c2;
+            padding: 12px 20px;
+            border-radius: 12px;
+            border: 2px solid black;
+            font-size: 22px;
+            z-index: 10;
+        }
+
+        .duck {
+            width: 90px;
+            height: auto;
+            position: absolute;
+            animation: waddle 3s infinite alternate ease-in-out;
+            cursor: pointer;
+        }
+
+        @keyframes waddle {
+            from { transform: translateY(0px); }
+            to { transform: translateY(-12px); }
+        }
+
+        .flying-duck {
+            position: absolute;
+            width: 110px;
+            animation: fly 5s linear forwards;
+        }
+
+        @keyframes fly {
+            from { transform: translate(-150px, 50px) rotate(0deg); }
+            to { transform: translate(120vw, -250px) rotate(20deg); }
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div id="pointsDisplay">Points: 0</div>
+    <div id="questionBox">Loading...</div>
+</div>
+
+<script>
+    let points = 0;
+
+    // ------- Math Question Generator -------
+    function newQuestion() {
+        let a = Math.floor(Math.random() * 10 + 1);
+        let b = Math.floor(Math.random() * 10 + 1);
+
+        let question = `${a} + ${b}`;
+        let answer = a + b;
+
+        document.getElementById("questionBox").innerText = "Solve: " + question;
+
+        spawnDuck(answer);
+    }
+
+    // ------- Spawn Duck with the Correct Answer -------
+    function spawnDuck(correctAnswer) {
+        const game = document.getElementById("game-container");
+        const duck = document.createElement("img");
+
+        duck.src = "https://pngimg.com/uploads/duck/duck_PNG5024.png";
+        duck.classList.add("duck");
+
+        duck.style.left = Math.random() * 80 + "vw";
+        duck.style.top = Math.random() * 70 + 20 + "vh";
+
+        duck.onclick = () => {
+            points++;
+            document.getElementById("pointsDisplay").innerText = "Points: " + points;
+            duck.remove();
+            newQuestion();
+        };
+
+        game.appendChild(duck);
+
+        // Remove duck after 7 seconds
+        setTimeout(() => {
+            if (duck.parentNode) duck.remove();
+            newQuestion();
+        }, 7000);
+    }
+
+    // Start game
+    newQuestion();
+
+    // ------- Flying Ducks on Keypress -------
+    document.addEventListener("keydown", e => {
+        if (e.key === "m" || e.key === "M") {
+            spawnFlyingDuck();
+        }
+        if (e.key === "r" || e.key === "R") {
+            spawnFlyingDuck();
+        }
+    });
+
+    function spawnFlyingDuck() {
+        const duck = document.createElement("img");
+        duck.src = "https://pngimg.com/uploads/duck/duck_PNG5024.png";
+        duck.classList.add("flying-duck");
+
+        duck.style.top = (Math.random() * 50 + 10) + "vh";
+
+        document.body.appendChild(duck);
+
+        setTimeout(() => duck.remove(), 5000);
+    }
+</script>
+
+</body>
+</html>
