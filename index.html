@@ -101,6 +101,7 @@
       flex-wrap:wrap;
     }
 
+    /* Right column */
     aside {
       padding:12px;
       border-radius:12px;
@@ -127,6 +128,7 @@
       opacity:0.9;
     }
 
+    /* Ducks container */
     .duck-stage{
       position:fixed;
       left:0;
@@ -138,6 +140,7 @@
       overflow:visible;
     }
 
+    /* Each duck is an svg wrapped in a .duck element which we animate */
     .duck{
       position:absolute;
       bottom:0;
@@ -153,15 +156,17 @@
 
     @keyframes walk {
       0% { transform: translateX(-130%) translateY(0) scaleX(1); }
-      50% { transform: translateX(50vw) translateY(-6px) scaleX(1); }
+      50% { transform: translateX(50vw) translateY(-6px) scaleX(1); } /* little bob */
       100% { transform: translateX(130vw) translateY(0) scaleX(1); }
     }
 
+    /* vary speeds and vertical offset for each duck */
     .d1 { left:-30vw; animation-duration: 14s; bottom:12px; transform:scale(0.95); animation-delay: 0s; }
     .d2 { left:-60vw; animation-duration: 10s; bottom:6px; transform:scale(0.9); animation-delay: 2s; }
     .d3 { left:-120vw; animation-duration: 18s; bottom:22px; transform:scale(1.05); animation-delay: 4s; }
     .d4 { left:-90vw; animation-duration: 12s; bottom:-4px; transform:scale(0.85); animation-delay: 6s; }
 
+    /* small wing-flap animation inside svg via class */
     .wing { transform-origin: 30% 50%; animation: flap 0.6s ease-in-out infinite; }
     .d2 .wing { animation-duration: .5s; }
     .d3 .wing { animation-duration: .7s; }
@@ -172,16 +177,19 @@
       100%{ transform: rotate(0deg); }
     }
 
+    /* cute footer note */
     .footer-note {
       margin-top:14px;
       font-size:13px;
       opacity:0.9;
     }
 
+    /* responsiveness */
     @media (max-width:880px){
       .card { grid-template-columns: 1fr; padding:18px; }
       aside { order:2; }
     }
+
   </style>
 </head>
 <body>
@@ -224,19 +232,26 @@
     </aside>
   </main>
 
+  <!-- Ducks stage: multiple svg ducks with different classes for speed/offset -->
   <div class="duck-stage" aria-hidden="true">
-    <!-- (ALL your duck SVGs stay unchanged — NOT touching them.) -->
     <!-- Duck 1 -->
     <div class="duck d1" style="left:-30vw;">
       <svg viewBox="0 0 200 120" width="120" height="80" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="cute duck">
         <g transform="translate(0,6)">
+          <!-- body -->
           <ellipse cx="86" cy="64" rx="58" ry="34" fill="#FFD54A"></ellipse>
+          <!-- wing -->
           <g class="wing">
             <path d="M60 54c12-14 40-20 58-6" fill="none" stroke="#FFC107" stroke-width="8" stroke-linecap="round"/>
           </g>
+          <!-- head -->
           <circle cx="138" cy="40" r="20" fill="#FFD54A"></circle>
+          <!-- eye -->
           <circle cx="145" cy="36" r="3.6" fill="#1b2430"></circle>
+          <!-- beak -->
           <path d="M156 44c10 2 16 6 10 10c-6 4-12 2-18 0" fill="#FF9800"></path>
+
+          <!-- feet -->
           <g transform="translate(40,86) scale(0.6)" fill="#FF9800">
             <path d="M20 2 L10 12 L24 12 Z"></path>
             <path d="M48 2 L38 12 L52 12 Z"></path>
@@ -303,16 +318,18 @@
     </div>
   </div>
 
-  <!-- SCRIPT WITH ONLY 1 CHANGE ADDED -->
   <script>
-    // Click to spawn random duck
-    document.addEventListener('click', function () {
+    // Click to spawn a duck (fun little interaction)
+    document.addEventListener('click', function (e) {
+      // create a new duck node with randomized speed/size
       const stage = document.querySelector('.duck-stage');
       const wrapper = document.createElement('div');
       const classes = ['d1','d2','d3','d4'];
-      wrapper.className = 'duck ' + classes[Math.floor(Math.random()*classes.length)];
+      const pick = classes[Math.floor(Math.random()*classes.length)];
+      wrapper.className = 'duck ' + pick;
+      // inline svg (small variant) - clone from d2 for simplicity
       wrapper.innerHTML = `
-        <svg viewBox="0 0 200 120" width="100" height="65">
+        <svg viewBox="0 0 200 120" width="100" height="65" role="img" aria-hidden="true">
           <g transform="translate(0,8)">
             <ellipse cx="70" cy="60" rx="50" ry="30" fill="#FFDE7D"></ellipse>
             <g class="wing">
@@ -328,20 +345,12 @@
           </g>
         </svg>`;
       stage.appendChild(wrapper);
-      setTimeout(()=> wrapper.remove(), 20000);
+
+      // remove after ~20s to keep DOM tidy
+      setTimeout(()=> wrapper.remove(), 22000);
     });
 
-    // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
-    // ✅ ONLY NEW FEATURE YOU ASKED FOR
-    // Press 4 → Go to DuckMath
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "4") {
-        window.location.href = "https://duckmath.org/";
-      }
-    });
-    // ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
-
-    // Reduced motion support
+    // Accessibility: reduce animation motion if user prefers reduced motion
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
     if (mq.matches) {
       document.querySelectorAll('.duck').forEach(d => {
@@ -350,6 +359,13 @@
         d.style.transform = 'translateX(0)';
       });
     }
+
+    // Press 4 to go to Duck Math
+    document.addEventListener('keydown', function(e){
+      if(e.key === '4'){
+        window.location.href = 'duck-math.html'; // replace with your duck math page
+      }
+    });
   </script>
 </body>
 </html>
