@@ -1,127 +1,196 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vedant's About Me</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(to bottom, #a0eaff, #ffffff);
-      overflow: hidden;
-      margin: 0;
-      padding: 0;
-    }
+    <title>Vedant's About Me</title>
+    <style>
+        body {
+            background: linear-gradient(white, lightblue);
+            font-family: Arial, sans-serif;
+            overflow-x: hidden;
+        }
 
-    h1, p {
-      text-align: center;
-    }
+        h1 {
+            text-align: center;
+            font-size: 40px;
+        }
 
-    /* Walking ducks */
-    .duck {
-      position: absolute;
-      bottom: 0;
-      width: 50px;
-      transition: transform 0.1s linear;
-    }
+        .duck, .flyduck, .monkey {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+        }
 
-    /* Flying ducks */
-    .flying-duck {
-      position: absolute;
-      width: 50px;
-      transition: transform 0.1s linear;
-    }
+        /* Walking duck */
+        .duck-shape {
+            width: 80px;
+            height: 40px;
+            background: yellow;
+            border-radius: 40px;
+            position: absolute;
+            bottom: 0;
+        }
+        .duck-head {
+            width: 40px;
+            height: 40px;
+            background: yellow;
+            border-radius: 50%;
+            position: absolute;
+            left: 55px;
+            top: -20px;
+        }
 
-    /* Monkeys climbing */
-    .monkey {
-      position: absolute;
-      width: 60px;
-      transition: transform 0.1s linear;
-    }
-  </style>
+        /* Flying duck */
+        .flyduck-shape {
+            width: 80px;
+            height: 40px;
+            background: orange;
+            border-radius: 40px;
+            position: absolute;
+        }
+        .flyduck-head {
+            width: 35px;
+            height: 35px;
+            background: orange;
+            border-radius: 50%;
+            position: absolute;
+            left: 60px;
+            top: -10px;
+        }
+
+        /* Monkey */
+        .monkey-shape {
+            width: 60px;
+            height: 60px;
+            background: brown;
+            border-radius: 50%;
+            position: absolute;
+        }
+        .monkey-body {
+            width: 40px;
+            height: 60px;
+            background: brown;
+            border-radius: 20px;
+            position: absolute;
+            top: 50px;
+            left: 10px;
+        }
+    </style>
 </head>
+
 <body>
-  <h1>Hi, I'm Vedant</h1>
-  <p>I like soccer, video games, and running.</p>
-  <p>I play for Cupertino FC, love Barcelona, support Man City, hate Man United.</p>
-  <p>I love Minecraft and Fortnite!</p>
-  <p>Press SPACE for monkeys, R for flying ducks, M for more flying ducks, 4 for games!</p>
 
-  <script>
-    // Utility function to create animal images
-    function createAnimal(src, className, x = 0, y = 0) {
-      const img = document.createElement('img');
-      img.src = src;
-      img.className = className;
-      img.style.left = x + 'px';
-      img.style.top = y + 'px';
-      document.body.appendChild(img);
-      return img;
-    }
+<h1>About Vedant</h1>
+<p style="text-align:center; font-size:22px;">
+My name is Vedant. I love soccer, video games, running, Barcelona, Man City, Fortnite, and Minecraft.
+</p>
 
-    // Walking ducks
-    const walkingDucks = [];
-    for (let i = 0; i < 5; i++) {
-      walkingDucks.push(createAnimal(
-        'https://i.imgur.com/1yFzA8Q.png', // small duck image
-        'duck',
-        i * 100,
-        window.innerHeight - 80
-      ));
-    }
+<script>
+function createDuck() {
+    let duck = document.createElement("div");
+    duck.className = "duck";
 
-    // Animate walking ducks
-    setInterval(() => {
-      walkingDucks.forEach(duck => {
-        let left = parseInt(duck.style.left);
-        left += 2;
-        if (left > window.innerWidth) left = -50;
-        duck.style.left = left + 'px';
-      });
-    }, 50);
+    let body = document.createElement("div");
+    body.className = "duck-shape";
 
-    // Keypress actions
-    document.addEventListener('keydown', function(event) {
-      if (event.key === ' ') { // monkeys climbing
-        const monkey = createAnimal(
-          'https://i.imgur.com/FrUZfTh.png', // monkey image
-          'monkey',
-          Math.random() * (window.innerWidth - 60),
-          window.innerHeight - 80
-        );
-        let top = parseInt(monkey.style.top);
-        const climb = setInterval(() => {
-          top -= 5;
-          monkey.style.top = top + 'px';
-          if (top < -60) {
-            clearInterval(climb);
+    let head = document.createElement("div");
+    head.className = "duck-head";
+
+    duck.appendChild(body);
+    duck.appendChild(head);
+
+    duck.style.left = "-100px";
+    duck.style.bottom = "20px";
+
+    document.body.appendChild(duck);
+
+    let x = -100;
+    let move = setInterval(() => {
+        x += 2;
+        duck.style.left = x + "px";
+        if (x > window.innerWidth + 200) {
+            duck.remove();
+            clearInterval(move);
+        }
+    }, 10);
+}
+
+function createFlyingDuck() {
+    let duck = document.createElement("div");
+    duck.className = "flyduck";
+
+    let body = document.createElement("div");
+    body.className = "flyduck-shape";
+
+    let head = document.createElement("div");
+    head.className = "flyduck-head";
+
+    duck.appendChild(body);
+    duck.appendChild(head);
+
+    duck.style.left = "-150px";
+    duck.style.top = Math.random() * 300 + "px";
+
+    document.body.appendChild(duck);
+
+    let x = -150;
+    let move = setInterval(() => {
+        x += 3;
+        duck.style.left = x + "px";
+        if (x > window.innerWidth + 300) {
+            duck.remove();
+            clearInterval(move);
+        }
+    }, 10);
+}
+
+function createMonkey() {
+    let monkey = document.createElement("div");
+    monkey.className = "monkey";
+
+    let face = document.createElement("div");
+    face.className = "monkey-shape";
+
+    let body = document.createElement("div");
+    body.className = "monkey-body";
+
+    monkey.appendChild(face);
+    monkey.appendChild(body);
+
+    monkey.style.left = Math.random() * (window.innerWidth - 100) + "px";
+    monkey.style.bottom = "-120px";
+
+    document.body.appendChild(monkey);
+
+    let y = -120;
+    let move = setInterval(() => {
+        y += 2;
+        monkey.style.bottom = y + "px";
+        if (y > window.innerHeight + 200) {
             monkey.remove();
-          }
-        }, 50);
-      }
+            clearInterval(move);
+        }
+    }, 10);
+}
 
-      if (event.key.toLowerCase() === 'r' || event.key.toLowerCase() === 'm') { // flying ducks
-        const fduck = createAnimal(
-          'https://i.imgur.com/1yFzA8Q.png', 
-          'flying-duck',
-          Math.random() * (window.innerWidth - 50),
-          window.innerHeight - 80
-        );
-        let top = parseInt(fduck.style.top);
-        const fly = setInterval(() => {
-          top -= 8;
-          fduck.style.top = top + 'px';
-          if (top < -50) {
-            clearInterval(fly);
-            fduck.remove();
-          }
-        }, 50);
-      }
+document.addEventListener("keydown", function(event) {
+    if (event.key === " ") {
+        createMonkey();
+    }
+    if (event.key === "r") {
+        createFlyingDuck();
+    }
+    if (event.key === "m") {
+        createMonkey();
+    }
+    if (event.key === "4") {
+        window.location.href = "https://duckmath.org/";
+    }
+});
 
-      if (event.key === '4') { // go to DuckMath games
-        window.location.href = 'https://duckmath.org/';
-      }
-    });
-  </script>
+// Walking ducks always moving
+setInterval(createDuck, 2000);
+
+</script>
+
 </body>
 </html>
